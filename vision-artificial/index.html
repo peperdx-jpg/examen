@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Examen de visión artificial · CBTis 236</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Mismo diseño que el examen de álgebra: hoja de examen sobre fondo ostión, cajas 2.5D de frente. Acento de programación (morado). */
+:root {
+  color-scheme: light;
+  --ostion: #FBF9F4;
+  --texto: #2B2D31;
+  --secundario: #6B6F76;
+  --acento: #7B4DE0;
+  --acento-canto: #5A33B5;
+  --acento-suave: #F1ECFC;
+  --correcto: #1E8A3A;
+  --correcto-suave: #E7F4EA;
+  --incorrecto: #D64545;
+  --incorrecto-suave: #FBEAEA;
+  --caja: #FFFFFF;
+  --borde: #DDD8CC;
+  --canto: #C3BCAC;
+  --terminal: #1E2540;
+  --terminal-texto: #D6D8DE;
+  --f-titulo: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --f-texto: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-codigo: "JetBrains Mono", Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--ostion); color: var(--texto); margin: 0; }
+body { font-family: var(--f-texto); font-size: 17px; line-height: 1.5; }
+.pagina { max-width: 760px; margin: 0 auto; padding-block: 24px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 20px; }
+h1, h2, h3 { font-family: var(--f-titulo); text-wrap: balance; margin: 0; line-height: 1.2; }
+h1 { font-size: 2rem; font-weight: 700; }
+h2 { font-size: 1.35rem; font-weight: 600; }
+p { margin: 0; }
+code, .cod { font-family: var(--f-codigo); font-size: .92em; background: var(--acento-suave); color: var(--acento-canto); padding: 1px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+.marca { display: flex; align-items: center; gap: 10px; font-family: var(--f-titulo); font-weight: 600; font-size: .85rem; letter-spacing: .06em; text-transform: uppercase; color: var(--secundario); }
+.marca .punto { width: 10px; height: 10px; border-radius: 50%; background: var(--acento); }
+.caja { background: var(--caja); border: 1.5px solid var(--borde); border-radius: 16px; box-shadow: 0 6px 0 var(--canto); padding: 24px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.sub { color: var(--secundario); }
+.reglas { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 520px) { .reglas { grid-template-columns: 1fr; } }
+.reglas li { background: var(--ostion); border: 1px solid var(--borde); border-radius: 10px; padding: 10px 12px; font-size: .95rem; }
+.reglas b { display: block; font-family: var(--f-titulo); font-size: 1.1rem; color: var(--acento); }
+label { font-weight: 600; font-size: .95rem; display: flex; flex-direction: column; gap: 6px; }
+input[type=text] { font: inherit; font-size: 1.1rem; padding: 12px 14px; border: 1.5px solid var(--borde); border-radius: 10px; background: var(--caja); color: var(--texto); width: 100%; }
+input[type=text]:focus { outline: none; border-color: var(--acento); box-shadow: 0 0 0 4px var(--acento-suave); }
+.fila { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.campos { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+@media (max-width: 520px) { .campos { grid-template-columns: 1fr; } h1 { font-size: 1.6rem; } .caja { padding: 18px; } }
+button { font: inherit; cursor: pointer; }
+.btn { font-family: var(--f-titulo); font-weight: 600; font-size: 1rem; border-radius: 12px; padding: 12px 22px; border: 1.5px solid transparent; transition: transform .08s, box-shadow .08s; }
+.btn:active { transform: translateY(3px); }
+.btn:focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; }
+.btn-1 { background: var(--acento); color: #fff; box-shadow: 0 4px 0 var(--acento-canto); }
+.btn-1:active { box-shadow: 0 1px 0 var(--acento-canto); }
+.btn-2 { background: var(--caja); color: var(--texto); border-color: var(--borde); box-shadow: 0 4px 0 var(--canto); }
+.btn-2:active { box-shadow: 0 1px 0 var(--canto); }
+.btn-txt { background: none; border: none; color: var(--acento); font-weight: 600; text-decoration: underline; padding: 4px 0; font-size: .95rem; }
+.error { color: var(--incorrecto); font-weight: 600; font-size: .95rem; }
+/* Barra de avance */
+.avance { display: flex; flex-direction: column; gap: 8px; }
+.avance-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 600; }
+.chip { font-family: var(--f-titulo); font-size: .8rem; letter-spacing: .05em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: var(--acento-suave); color: var(--acento-canto); }
+.barra { height: 10px; border-radius: 999px; background: var(--caja); border: 1px solid var(--borde); overflow: hidden; }
+.barra > i { display: block; height: 100%; background: var(--acento); border-radius: 999px; transition: width .3s; }
+/* Pregunta */
+.enunciado { font-size: 1.1rem; font-weight: 500; }
+.terminal { font-family: var(--f-codigo); font-size: 1.05rem; background: var(--terminal); color: var(--terminal-texto); border-radius: 12px; padding: 16px 18px; white-space: pre-wrap; overflow-x: auto; line-height: 1.6; }
+.terminal:empty { display: none; }
+.terminal .k { color: #B9A2F2; }
+.terminal .r { color: #FF8A8A; }
+.ayuda { font-size: .9rem; color: var(--secundario); }
+.opciones { display: grid; gap: 10px; }
+.opcion { text-align: left; background: var(--caja); border: 1.5px solid var(--borde); border-radius: 12px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start; box-shadow: 0 3px 0 var(--canto); color: var(--texto); font-size: 1rem; min-width: 0; }
+.opcion > span:last-child { min-width: 0; }
+.opcion .letra { font-family: var(--f-titulo); font-weight: 700; color: var(--secundario); min-width: 1.2em; }
+.opcion[aria-pressed=true] { border-color: var(--acento); background: var(--acento-suave); box-shadow: 0 3px 0 var(--acento); }
+.opcion.bien { border-color: var(--correcto); background: var(--correcto-suave); box-shadow: 0 3px 0 var(--correcto); }
+.opcion.mal { border-color: var(--incorrecto); background: var(--incorrecto-suave); box-shadow: 0 3px 0 var(--incorrecto); }
+.opcion:disabled { cursor: default; }
+.retro { border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; border: 1.5px solid; }
+.retro.bien { background: var(--correcto-suave); border-color: var(--correcto); }
+.retro.mal { background: var(--incorrecto-suave); border-color: var(--incorrecto); }
+.retro h3 { font-size: 1.2rem; }
+.retro.bien h3 { color: var(--correcto); }
+.retro.mal h3 { color: var(--incorrecto); }
+.explica { background: var(--caja); border-radius: 10px; padding: 12px 14px; border: 1px solid var(--borde); display: flex; flex-direction: column; gap: 8px; }
+.explica b { font-family: var(--f-titulo); }
+/* Resultados */
+.boleta { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.dato { background: var(--ostion); border: 1px solid var(--borde); border-radius: 12px; padding: 12px; min-width: 0; }
+.dato span { display: block; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: var(--secundario); font-weight: 600; }
+.dato strong { font-family: var(--f-titulo); font-size: 1.3rem; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.dato.brilla { border: 2px solid var(--acento); box-shadow: 0 0 0 4px var(--acento-suave), 0 0 18px rgba(123,77,224,.25); background: var(--caja); }
+.dato.brilla strong { color: var(--acento); letter-spacing: .08em; }
+.nota-grande { font-size: 2.4rem !important; }
+.estado { font-size: .95rem; padding: 10px 12px; border-radius: 10px; background: var(--ostion); border: 1px solid var(--borde); }
+.tabla-env { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--borde); vertical-align: top; }
+th { font-family: var(--f-titulo); font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: var(--secundario); }
+td.marca-r { font-weight: 700; font-size: 1.1rem; }
+tr.bien td.marca-r { color: var(--correcto); }
+tr.mal td.marca-r { color: var(--incorrecto); }
+tr.mal { background: var(--incorrecto-suave); }
+.imagen-res img { border: 1px solid var(--borde); border-radius: 12px; width: 100%; }
+.demo { font-size: .85rem; color: var(--secundario); border-top: 1px dashed var(--borde); padding-top: 14px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="pagina">
+  <div class="marca"><span class="punto"></span>Aula Infinita · Programación</div>
+
+  <!-- Inicio -->
+  <section id="inicio" class="caja">
+    <div>
+      <h1>Examen de visión artificial</h1>
+      <p class="sub">3er grado · CBTis 236</p>
+    </div>
+    <ul class="reglas">
+      <li><b>20 preguntas</b>de opción múltiple: imágenes, herramientas, Python y entornos virtuales.</li>
+      <li><b>Lee todas</b>las opciones: hay respuestas que parecen correctas y no lo son.</li>
+      <li><b>Sin límite</b>de tiempo. Lee con calma.</li>
+      <li><b>Al calificar</b>ves si acertaste y por qué.</li>
+    </ul>
+    <div class="campos">
+      <label for="nombre">Nombre completo<input type="text" id="nombre" autocomplete="name" placeholder="Ej. Ana López Pérez"></label>
+      <label for="grupo">Grupo<input type="text" id="grupo" placeholder="Ej. 3A"></label>
+    </div>
+    <p id="err-inicio" class="error" hidden></p>
+    <div class="fila"><button class="btn btn-1" id="btn-comenzar">Comenzar examen</button></div>
+    <p class="demo">Vista previa para el maestro: <button class="btn-txt" id="btn-demo">ver un ejemplo de resultados</button> · <button class="btn-txt" id="btn-ver-verif">verificar un código</button></p>
+  </section>
+
+  <!-- Pregunta -->
+  <section id="examen" hidden>
+    <div class="avance">
+      <div class="avance-top"><span id="num-preg">Pregunta 1 de 20</span><span class="chip" id="chip-sec">Visión artificial</span></div>
+      <div class="barra"><i id="barra" style="width:0%"></i></div>
+    </div>
+    <div class="caja" style="margin-top:16px">
+      <p class="enunciado" id="enunciado"></p>
+      <div class="terminal" id="terminal"></div>
+      <div id="zona-resp"></div>
+      <p id="err-resp" class="error" hidden></p>
+      <div class="fila" id="acciones">
+        <button class="btn btn-1" id="btn-calificar">Calificar</button>
+      </div>
+      <div id="retro" hidden></div>
+      <div class="fila"><button class="btn btn-1" id="btn-siguiente" hidden>Siguiente pregunta</button></div>
+    </div>
+  </section>
+
+  <!-- Resultados -->
+  <section id="resultados" hidden>
+    <div class="caja">
+      <div>
+        <h1>Resultados</h1>
+        <p class="sub">Examen de visión artificial · 3er grado · CBTis 236</p>
+      </div>
+      <div class="boleta" id="boleta"></div>
+      <p class="estado" id="estado-envio"></p>
+      <div class="fila">
+        <button class="btn btn-1" id="btn-imagen">Guardar imagen de resultados</button>
+      </div>
+      <div class="imagen-res" id="imagen-res" hidden>
+        <p class="ayuda" style="margin-bottom:8px">En celular: mantén presionada la imagen y elige <b>Guardar imagen</b>. En computadora: clic derecho y <b>Guardar imagen como</b>. Después súbela a tu tarea de Classroom. También puedes tomar captura de pantalla.</p>
+        <img id="img-res" alt="Imagen con tus resultados del examen">
+        <p style="margin-top:8px"><a id="link-desc" download="resultados-examen-vision-artificial.png">Descargar imagen</a></p>
+      </div>
+      <h2>Revisión pregunta por pregunta</h2>
+      <div class="tabla-env"><table><thead><tr><th>#</th><th>Pregunta</th><th>Tu respuesta</th><th>Correcta</th><th></th></tr></thead><tbody id="tabla-rev"></tbody></table></div>
+      <p class="demo" id="siguiente-alumno" hidden>Para el maestro: <button class="btn-txt" id="btn-sig-alumno">dejar la computadora lista para el siguiente alumno</button></p>
+      <p class="demo" id="demo-reset" hidden>Esto es un ejemplo para el maestro. <button class="btn-txt" id="btn-reset">Volver al inicio</button></p>
+    </div>
+  </section>
+
+  <!-- Verificar código (maestro) -->
+  <section id="verificar" class="caja" hidden>
+    <div><h2>Verificar un código</h2><p class="sub">Copia los datos tal como aparecen en la imagen del alumno.</p></div>
+    <div class="campos">
+      <label for="v-nombre">Nombre<input type="text" id="v-nombre"></label>
+      <label for="v-grupo">Grupo<input type="text" id="v-grupo"></label>
+      <label for="v-aciertos">Aciertos (solo el número)<input type="text" id="v-aciertos" inputmode="numeric"></label>
+      <label for="v-fecha">Fecha y hora<input type="text" id="v-fecha" placeholder="23/10/2026 08:45"></label>
+      <label for="v-codigo">Código<input type="text" id="v-codigo"></label>
+    </div>
+    <div class="fila"><button class="btn btn-1" id="btn-verif">Verificar</button><button class="btn btn-2" id="btn-verif-volver">Volver</button></div>
+    <p id="v-res" class="estado" hidden></p>
+  </section>
+</div>
+
+<script>
+// ===== Banco de preguntas =====
+// Cada pregunta: c = correcta, f = distractor que parece verdadero (la "trampa"), o = otras dos opciones.
+// explica = por qué la correcta es correcta; trampa = por qué la opción que parece verdadera no lo es.
+var BANCO = [
+  // ---------- Visión artificial ----------
+  { id: "V1", sec: "Visión artificial", enunciado: "¿Qué es la visión artificial?",
+    c: "Una rama de la inteligencia artificial que permite a una computadora obtener información de imágenes y videos para reconocer lo que hay en ellos",
+    f: "Una cámara de muy alta resolución que permite a la computadora ver igual que el ojo humano",
+    o: ["Un programa para editar fotos y ponerles filtros", "Una técnica médica para corregir la vista con lentes"],
+    explica: "La visión artificial analiza imágenes para entender su contenido: detectar caras, leer placas, contar objetos.",
+    trampa: "La cámara solo captura la imagen. Sin un programa que la analice, la computadora no “entiende” nada de lo que hay en ella." },
+  { id: "V2", sec: "Visión artificial", enunciado: "¿Cómo “ve” una computadora una imagen?",
+    c: "Como una tabla (matriz) de números: un valor por cada píxel",
+    f: "Reconoce formas, objetos y colores de un vistazo, igual que nosotros",
+    o: ["Como un texto que describe lo que aparece en la foto", "Como un sonido que cambia según los colores"],
+    explica: "Cada píxel se guarda como uno o varios números. La computadora solo ve esa tabla; reconocer objetos requiere un algoritmo que la analice.",
+    trampa: "Nosotros reconocemos objetos al instante; la computadora no. Primero tiene números y después, con un programa, busca patrones en ellos." },
+  { id: "V3", sec: "Visión artificial", enunciado: "¿Qué información contiene una imagen digital?",
+    c: "Los valores de color de cada píxel y datos extra del archivo (metadatos) como dimensiones, formato y fecha",
+    f: "El nombre de los objetos que aparecen en ella, por ejemplo “perro” o “árbol”",
+    o: ["Solo el nombre del archivo", "El sonido del lugar donde se tomó la foto"],
+    explica: "La imagen guarda números de color por píxel. Además trae metadatos: ancho y alto, formato, fecha y a veces la cámara o la ubicación.",
+    trampa: "La imagen no trae escrito “perro”. Saber que hay un perro es justo el trabajo que hace la visión artificial al analizar los píxeles." },
+
+  // ---------- Imagen digital ----------
+  { id: "I1", sec: "Imagen digital", enunciado: "¿Cómo está formada una imagen digital a color (RGB)?",
+    c: "Por píxeles; cada píxel tiene tres valores, rojo, verde y azul, de 0 a 255",
+    f: "Por píxeles; cada píxel tiene un solo número de 0 a 255 que indica su color",
+    o: ["Por líneas y curvas dibujadas con fórmulas", "Por letras que indican el nombre de cada color"],
+    explica: "En una imagen a color cada píxel mezcla tres canales: R (rojo), G (verde) y B (azul). Por ejemplo, (255, 0, 0) es rojo puro.",
+    trampa: "Un solo número de 0 a 255 por píxel es una imagen en escala de grises (0 = negro, 255 = blanco), no a color." },
+  { id: "I2", sec: "Imagen digital", enunciado: "¿Cuál de estas listas contiene solo formatos de imagen?",
+    c: "JPG, PNG, GIF, BMP",
+    f: "JPG, PNG, MP4, GIF",
+    o: ["DOCX, PDF, TXT, PNG", "MP3, WAV, JPG, AVI"],
+    explica: "JPG, PNG, GIF y BMP son formatos de imagen. JPG comprime mucho (fotos), PNG no pierde calidad y permite transparencia.",
+    trampa: "MP4 es un formato de video, no de imagen. Se parece porque suele aparecer junto a fotos en el celular." },
+  { id: "I3", sec: "Imagen digital", enunciado: "¿A qué se refieren las dimensiones de una imagen?",
+    c: "Al ancho por el alto medidos en píxeles, por ejemplo 1920 × 1080",
+    f: "A cuántos megabytes (MB) ocupa la imagen en la memoria",
+    o: ["A los centímetros que mide la pantalla del celular", "A la cantidad de colores que usa la imagen"],
+    explica: "Las dimensiones dicen cuántos píxeles tiene la imagen a lo ancho y a lo alto. 1920 × 1080 = 2 073 600 píxeles.",
+    trampa: "Los megabytes son el tamaño (peso) del archivo, no sus dimensiones. Son dos cosas distintas." },
+  { id: "I4", sec: "Imagen digital", enunciado: "¿A qué se refiere el tamaño (peso) de una imagen?",
+    c: "Al espacio que ocupa el archivo en la memoria, medido en KB o MB",
+    f: "Al ancho por el alto de la imagen en píxeles",
+    o: ["A qué tan grande se ve en la pantalla", "Al número de objetos que aparecen en la foto"],
+    explica: "El tamaño es cuánta memoria ocupa el archivo: por ejemplo 350 KB o 2.4 MB. Depende de las dimensiones, del formato y de la compresión.",
+    trampa: "El ancho por alto en píxeles son las dimensiones. Dos imágenes de 1920 × 1080 pueden pesar distinto si una es JPG y otra PNG." },
+
+  // ---------- Herramientas ----------
+  { id: "H1", sec: "Herramientas", enunciado: "¿Qué es Google Colab?",
+    c: "Un servicio gratuito de Google para escribir y ejecutar código de Python desde el navegador, en la nube, sin instalar nada",
+    f: "Un programa que se instala en tu computadora para escribir Python sin internet",
+    o: ["Una red social de Google para compartir fotos", "Un lenguaje de programación creado por Google"],
+    explica: "Colab funciona con cuadernos (notebooks) en la nube: abres la página, escribes código en celdas y se ejecuta en las computadoras de Google.",
+    trampa: "Colab no se instala y necesita internet. El programa que sí se instala en tu computadora es un editor como VS Code." },
+  { id: "H2", sec: "Herramientas", enunciado: "¿Qué es Visual Studio Code (VS Code)?",
+    c: "Un editor de código que se instala en tu computadora y sirve para escribir y ejecutar programas en Python y otros lenguajes",
+    f: "Un servicio de Google en la nube para ejecutar Python sin instalar nada",
+    o: ["Un lenguaje de programación para hacer dibujos", "Un antivirus de Microsoft"],
+    explica: "VS Code es un editor: ahí escribes tus archivos .py, abres la terminal y, con la extensión de Python, ejecutas tus programas.",
+    trampa: "Eso describe a Google Colab. VS Code se instala en tu computadora y funciona aunque no tengas internet." },
+  { id: "H3", sec: "Herramientas", enunciado: "¿Qué es Python?",
+    c: "Un lenguaje de programación fácil de leer, muy usado en inteligencia artificial y visión artificial",
+    f: "El programa (editor) donde se escribe el código, como Colab o VS Code",
+    o: ["Una librería para abrir imágenes", "Un tipo de archivo de imagen"],
+    explica: "Python es el lenguaje: las instrucciones que la computadora entiende. Colab y VS Code son lugares donde escribes y ejecutas ese lenguaje.",
+    trampa: "Colab y VS Code son herramientas para escribir código; Python es el lenguaje. Es como confundir el español con el cuaderno donde escribes." },
+
+  // ---------- Programación ----------
+  { id: "P1", sec: "Programación", enunciado: "¿Qué es un algoritmo?",
+    c: "Una serie ordenada y finita de pasos para resolver un problema",
+    f: "Un programa escrito en Python",
+    o: ["Un error en el código", "Una computadora muy potente"],
+    explica: "Un algoritmo es el plan: pasos claros, en orden y que terminan. Después se puede escribir en Python, en otro lenguaje o en papel.",
+    trampa: "Un programa es un algoritmo ya escrito en un lenguaje. Pero el algoritmo existe antes: puede estar en una receta o en un diagrama." },
+  { id: "P2", sec: "Programación", enunciado: "¿Qué es un dato?",
+    c: "Un valor que la computadora guarda y procesa, como un número, un texto o verdadero/falso",
+    f: "Información ya analizada que sirve para tomar decisiones",
+    o: ["Una instrucción que le dice a la computadora qué hacer", "Un programa que se instala con pip"],
+    explica: "Un dato es un valor suelto: 16, “Ana”, 3.5, True. Cuando los datos se organizan y se interpretan, se convierten en información.",
+    trampa: "Eso es información: datos ya procesados con significado. El dato es la materia prima, por ejemplo el número 255 de un píxel." },
+  { id: "P3", sec: "Programación", enunciado: "¿Qué es una variable?",
+    c: "Un espacio con nombre en la memoria que guarda un dato y que puede cambiar durante el programa",
+    f: "Un valor que nunca cambia mientras el programa se ejecuta",
+    o: ["Un comando para instalar herramientas", "Un error que aparece al ejecutar el programa"],
+    explica: "En Python escribes edad = 16: “edad” es el nombre y 16 el dato guardado. Después puedes hacer edad = 17 y el valor cambia.",
+    trampa: "Un valor que nunca cambia se llama constante. La palabra “variable” viene justo de que puede variar." },
+  { id: "P4", sec: "Programación", enunciado: "¿Qué muestra en pantalla este programa?",
+    terminal: '<span class="k">edad</span> = 16\n<span class="k">print</span>(edad)',
+    c: "16",
+    f: "edad",
+    o: ["Manda a imprimir el número 16 en la impresora", "Nada, porque falta escribir comillas"],
+    explica: "print() muestra en pantalla lo que le pongas. Como edad no lleva comillas, Python muestra el valor guardado: 16.",
+    trampa: "Mostraría la palabra edad solo si fuera print(\"edad\"), con comillas. Sin comillas se muestra el valor de la variable." },
+  { id: "P5", sec: "Programación", enunciado: "¿Qué línea de código carga (importa) la herramienta NumPy dentro de tu programa de Python?",
+    c: "<code>import numpy as np</code>",
+    f: "<code>pip install numpy</code>",
+    o: ["<code>include numpy</code>", "<code>print(numpy)</code>"],
+    explica: "import se escribe dentro del programa para poder usar la herramienta. “as np” solo le pone un nombre corto.",
+    trampa: "pip install descarga e instala la herramienta (se escribe en la terminal). Para usarla en tu código, después necesitas import." },
+  { id: "P6", sec: "Programación", enunciado: "¿Qué comando, escrito en la terminal, instala la herramienta OpenCV para trabajar con imágenes?",
+    c: "<code>pip install opencv-python</code>",
+    f: "<code>import cv2</code>",
+    o: ["<code>python opencv-python</code>", "<code>install pip opencv</code>"],
+    explica: "pip install descarga e instala la herramienta. Se hace una vez (dentro de tu entorno virtual activado).",
+    trampa: "import cv2 va dentro del programa y solo funciona si OpenCV ya está instalado. Si no lo está, aparece el error ModuleNotFoundError." },
+
+  // ---------- Entornos virtuales ----------
+  { id: "E1", sec: "Entornos virtuales", enunciado: "¿Qué es un entorno virtual de Python?",
+    c: "Una carpeta aislada con su propio Python y sus propias herramientas para un proyecto, sin mezclarse con otros proyectos",
+    f: "La carpeta donde guardas todos los archivos .py de tu proyecto",
+    o: ["Una computadora en la nube que te presta Google", "Un videojuego para aprender a programar"],
+    explica: "El entorno virtual (venv) guarda su propio Python y las herramientas que instalas con pip, solo para ese proyecto.",
+    trampa: "Tus archivos .py viven en la carpeta del proyecto. El entorno virtual es otra cosa: guarda Python y las herramientas instaladas." },
+  { id: "E2", sec: "Entornos virtuales", enunciado: "¿Qué comando crea un entorno virtual llamado venv?",
+    c: "<code>python -m venv venv</code>",
+    f: "<code>pip install venv</code>",
+    o: ["<code>.\\venv\\Scripts\\Activate.ps1</code>", "<code>import venv</code>"],
+    explica: "python -m venv venv: “python” usa Python, “-m venv” es la herramienta para crear entornos y el último “venv” es el nombre de la carpeta.",
+    trampa: "venv ya viene incluido en Python; no se instala con pip. pip install sirve para instalar herramientas, no para crear el entorno." },
+  { id: "E3", sec: "Entornos virtuales", enunciado: "En PowerShell de Windows, ¿qué comando activa el entorno virtual venv?",
+    c: "<code>.\\venv\\Scripts\\Activate.ps1</code>",
+    f: "<code>python -m venv venv</code>",
+    o: ["<code>deactivate</code>", "<code>pip activate venv</code>"],
+    explica: "Al ejecutar Activate.ps1 la línea cambia a (venv) PS C:\\mi_proyecto>. Ese (venv) indica que estás dentro del entorno.",
+    trampa: "python -m venv venv crea el entorno, pero no lo activa. Primero se crea (una vez) y luego se activa (cada vez que abres la terminal)." },
+  { id: "E4", sec: "Entornos virtuales", enunciado: "Al activar el entorno, PowerShell muestra este error. ¿Cómo se soluciona?",
+    terminal: '<span class="r">No se puede cargar el archivo .\\venv\\Scripts\\Activate.ps1 porque la ejecución de scripts está deshabilitada en este sistema.</span>',
+    c: "Ejecutar <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>, responder S y volver a activar",
+    f: "Borrar la carpeta venv y crear otra vez el entorno",
+    o: ["Escribir <code>pip install Activate.ps1</code>", "Reinstalar VS Code"],
+    explica: "Windows bloquea los scripts por seguridad. Ese comando los permite solo para tu usuario. Se hace una sola vez y después ya puedes activar.",
+    trampa: "Si borras y vuelves a crear el entorno, el permiso de Windows sigue igual y el error vuelve a salir." }
+];
+
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+// Cada alumno recibe las preguntas y las opciones en distinto orden
+function generarExamen() {
+  return shuffle(BANCO).map(function (q) { return { id: q.id, orden: shuffle(["c", "f", "o0", "o1"]) }; });
+}
+function pregunta(id) { for (var i = 0; i < BANCO.length; i++) if (BANCO[i].id === id) return BANCO[i]; return null; }
+function textoOpcion(q, k) { return k === "c" ? q.c : k === "f" ? q.f : q.o[+k.slice(1)]; }
+
+// ---------- Código de verificación (mismo método que el examen de álgebra) ----------
+var SAL = "AulaInfinita-CBTis236-vision";
+function codigo(nombre, grupo, aciertos, fecha) {
+  var s = [nombre.trim().toLowerCase().replace(/\s+/g, " "), grupo.trim().toLowerCase().replace(/\s+/g, ""), aciertos, fecha.trim(), SAL].join("|");
+  var h = 2166136261;
+  for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  var c = h.toString(36).toUpperCase();
+  while (c.length < 6) c = "0" + c;
+  return c.slice(-6);
+}
+
+if (typeof module !== "undefined" && module.exports) module.exports = { BANCO: BANCO, generarExamen: generarExamen, codigo: codigo };
+</script>
+<script>
+// ===== Configuración del envío a Google Forms (igual que en el examen de álgebra; se llena cuando Pepe cree el formulario) =====
+var FORM = {
+  url: "",            // ej. https://docs.google.com/forms/d/e/XXXX/formResponse
+  campos: { nombre: "", grupo: "", calificacion: "", aciertos: "", fecha: "", codigo: "" }
+};
+
+var TOTAL = 20;
+var CLAVE = "examen-vision-artificial-cbtis236";
+var est = null; // {nombre, grupo, preguntas[{id, orden}], resp[], ok[], idx, fin, fecha, demo}
+function $(id) { return document.getElementById(id); }
+function guardar() { if (est && !est.demo) { try { localStorage.setItem(CLAVE, JSON.stringify(est)); } catch (e) {} } }
+function cargar() { try { var s = localStorage.getItem(CLAVE); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+function texto(html) { var d = document.createElement("div"); d.innerHTML = html; return d.textContent; }
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+function mostrar(id) { ["inicio", "examen", "resultados", "verificar"].forEach(function (s) { $(s).hidden = s !== id; }); window.scrollTo(0, 0); }
+function fechaHoy() { var d = new Date(), p = function (n) { return (n < 10 ? "0" : "") + n; };
+  return p(d.getDate()) + "/" + p(d.getMonth() + 1) + "/" + d.getFullYear() + " " + p(d.getHours()) + ":" + p(d.getMinutes()); }
+
+// ---------- Inicio ----------
+$("btn-comenzar").onclick = function () {
+  var n = $("nombre").value.trim(), g = $("grupo").value.trim();
+  if (n.split(/\s+/).length < 2) { $("err-inicio").textContent = "Escribe tu nombre completo (nombre y apellido)."; $("err-inicio").hidden = false; return; }
+  if (!g) { $("err-inicio").textContent = "Escribe tu grupo."; $("err-inicio").hidden = false; return; }
+  est = { nombre: n, grupo: g, preguntas: generarExamen(), resp: [], ok: [], idx: 0, fin: false };
+  guardar(); mostrar("examen"); pintarPregunta();
+};
+
+// ---------- Pregunta ----------
+var seleccion = null;
+function pintarPregunta() {
+  var i = est.idx, p = est.preguntas[i], q = pregunta(p.id);
+  $("num-preg").textContent = "Pregunta " + (i + 1) + " de " + TOTAL;
+  $("chip-sec").textContent = q.sec;
+  $("barra").style.width = (i / TOTAL * 100) + "%";
+  $("enunciado").innerHTML = q.enunciado;
+  $("terminal").innerHTML = q.terminal || "";
+  $("err-resp").hidden = true; $("retro").hidden = true; $("btn-siguiente").hidden = true;
+  $("acciones").hidden = false;
+  seleccion = null;
+  var z = $("zona-resp");
+  z.innerHTML = '<div class="opciones">' + p.orden.map(function (k, n) {
+    return '<button class="opcion" aria-pressed="false" data-k="' + k + '"><span class="letra">' + "ABCD"[n] + '</span><span>' + textoOpcion(q, k) + '</span></button>'; }).join("") + "</div>";
+  Array.prototype.forEach.call(z.querySelectorAll(".opcion"), function (b) {
+    b.onclick = function () { Array.prototype.forEach.call(z.querySelectorAll(".opcion"), function (o) { o.setAttribute("aria-pressed", "false"); });
+      b.setAttribute("aria-pressed", "true"); seleccion = b.dataset.k; };
+  });
+  if (est.resp[i] !== undefined) mostrarRetro();
+}
+$("btn-calificar").onclick = function () {
+  if (!seleccion) { $("err-resp").textContent = "Elige una opción."; $("err-resp").hidden = false; return; }
+  est.resp[est.idx] = seleccion; est.ok[est.idx] = seleccion === "c"; guardar(); mostrarRetro();
+};
+function mostrarRetro() {
+  var i = est.idx, q = pregunta(est.preguntas[i].id), ok = est.ok[i], r = est.resp[i];
+  $("acciones").hidden = true; $("err-resp").hidden = true;
+  Array.prototype.forEach.call(document.querySelectorAll(".opcion"), function (b) { var k = b.dataset.k; b.disabled = true;
+    if (k === "c") b.classList.add("bien"); else if (k === r) b.classList.add("mal"); });
+  var h = '<div class="retro ' + (ok ? "bien" : "mal") + '"><h3>' + (ok ? "✔ ¡Correcto!" : "✘ Incorrecto") + "</h3>";
+  if (!ok) h += "<p>Tu respuesta: <b>" + textoOpcion(q, r) + "</b><br>Respuesta correcta: <b>" + q.c + "</b></p>";
+  h += '<div class="explica"><p><b>¿Por qué?</b> ' + q.explica + "</p>";
+  h += "<p><b>Ojo con esta:</b> “" + q.f + "”. " + q.trampa + "</p></div>";
+  $("retro").innerHTML = h + "</div>"; $("retro").hidden = false;
+  $("btn-siguiente").hidden = false;
+  $("btn-siguiente").textContent = i === TOTAL - 1 ? "Ver mis resultados" : "Siguiente pregunta";
+}
+$("btn-siguiente").onclick = function () {
+  if (est.idx === TOTAL - 1) { terminar(); return; }
+  est.idx++; guardar(); pintarPregunta(); window.scrollTo(0, 0);
+};
+
+// ---------- Resultados ----------
+function aciertos() { return est.ok.filter(Boolean).length; }
+function terminar() {
+  est.fin = true; est.fecha = est.fecha || fechaHoy(); guardar(); pintarResultados(); enviar();
+}
+function pintarResultados() {
+  mostrar("resultados");
+  var a = aciertos(), cal = (a / TOTAL * 10).toFixed(1), cod = codigo(est.nombre, est.grupo, a, est.fecha);
+  est.cal = cal; est.cod = cod;
+  $("boleta").innerHTML = [
+    ["Nombre", esc(est.nombre)], ["Grupo", esc(est.grupo)], ["Fecha", est.fecha],
+    ["Aciertos", a + " de " + TOTAL], ["Calificación", '<span class="nota-grande">' + cal + "</span>"]
+  ].map(function (d) { return '<div class="dato"><span>' + d[0] + "</span><strong>" + d[1] + "</strong></div>"; }).join("") +
+    '<div class="dato brilla"><span>Código de verificación</span><strong>' + cod + "</strong></div>";
+  $("tabla-rev").innerHTML = est.preguntas.map(function (p, k) {
+    var q = pregunta(p.id), ok = est.ok[k];
+    return '<tr class="' + (ok ? "bien" : "mal") + '"><td>' + (k + 1) + "</td><td>" + texto(q.enunciado) + "</td><td>" + textoOpcion(q, est.resp[k]) + "</td><td>" + q.c + '</td><td class="marca-r">' + (ok ? "✔" : "✘") + "</td></tr>";
+  }).join("");
+  $("demo-reset").hidden = !est.demo;
+  $("siguiente-alumno").hidden = !!est.demo;
+  $("imagen-res").hidden = true;
+}
+function enviar() {
+  var e = $("estado-envio");
+  if (est.demo) { e.textContent = "Ejemplo: aquí el alumno verá “Resultados enviados a tu maestro” cuando conectemos el Formulario."; return; }
+  if (!FORM.url) { e.textContent = "Guarda la imagen de tus resultados y súbela a tu tarea de Classroom."; return; }
+  if (est.enviado) { e.textContent = "✔ Tus resultados ya se enviaron a tu maestro."; return; }
+  e.textContent = "Enviando resultados a tu maestro…";
+  var d = new URLSearchParams(), c = FORM.campos;
+  d.append(c.nombre, est.nombre); d.append(c.grupo, est.grupo); d.append(c.calificacion, est.cal);
+  d.append(c.aciertos, aciertos() + "/" + TOTAL); d.append(c.fecha, est.fecha); d.append(c.codigo, est.cod);
+  fetch(FORM.url, { method: "POST", mode: "no-cors", body: d }).then(function () {
+    est.enviado = true; guardar(); e.textContent = "✔ Tus resultados se enviaron a tu maestro. Guarda también la imagen y súbela a Classroom.";
+  }).catch(function () { e.textContent = "No se pudieron enviar los resultados (revisa tu internet). Guarda la imagen y súbela a Classroom."; });
+}
+
+// ---------- Imagen de resultados ----------
+$("btn-imagen").onclick = function () {
+  var go = function () {
+    var W = 1080, H = 1350, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    var g = cv.getContext("2d"), a = aciertos();
+    g.fillStyle = "#FBF9F4"; g.fillRect(0, 0, W, H);
+    function caja(x, y, w, h, r, fill, edge) { g.fillStyle = edge; rr(x, y + 8, w, h, r); g.fill(); g.fillStyle = fill; rr(x, y, w, h, r); g.fill(); g.strokeStyle = "#DDD8CC"; g.lineWidth = 2; rr(x, y, w, h, r); g.stroke(); }
+    function rr(x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+    caja(60, 60, 960, 1210, 28, "#FFFFFF", "#C3BCAC");
+    g.fillStyle = "#7B4DE0"; g.beginPath(); g.arc(112, 122, 9, 0, 7); g.fill();
+    g.fillStyle = "#6B6F76"; g.font = "600 26px Poppins, sans-serif"; g.fillText("AULA INFINITA · PROGRAMACIÓN", 134, 131);
+    g.fillStyle = "#2B2D31"; g.font = "700 60px Poppins, sans-serif"; g.fillText("Resultados", 100, 220);
+    g.fillStyle = "#6B6F76"; g.font = "500 30px Inter, sans-serif"; g.fillText("Examen de visión artificial · 3er grado · CBTis 236", 100, 270);
+    var filas = [["Nombre", est.nombre], ["Grupo", est.grupo], ["Fecha", est.fecha]];
+    filas.forEach(function (f, k) { var y = 345 + k * 70;
+      g.fillStyle = "#6B6F76"; g.font = "600 24px Inter, sans-serif"; g.fillText(f[0].toUpperCase(), 100, y);
+      g.fillStyle = "#2B2D31"; g.font = "600 34px Poppins, sans-serif"; var t = f[1]; while (g.measureText(t).width > 620 && t.length > 3) t = t.slice(0, -2) + "…"; g.fillText(t, 330, y + 2); });
+    // Calificación
+    caja(100, 640, 420, 200, 22, "#F1ECFC", "#5A33B5");
+    g.fillStyle = "#5A33B5"; g.font = "600 24px Inter, sans-serif"; g.fillText("CALIFICACIÓN", 130, 690);
+    g.font = "700 96px Poppins, sans-serif"; g.fillText(est.cal, 130, 800);
+    g.fillStyle = "#2B2D31"; g.font = "600 30px Poppins, sans-serif"; g.fillText(a + " de " + TOTAL + " aciertos", 560, 720);
+    // Código con borde brillante
+    g.save(); g.shadowColor = "rgba(123,77,224,.45)"; g.shadowBlur = 24; g.strokeStyle = "#7B4DE0"; g.lineWidth = 4; rr(560, 750, 420, 90, 18); g.stroke(); g.restore();
+    g.fillStyle = "#6B6F76"; g.font = "600 20px Inter, sans-serif"; g.fillText("CÓDIGO", 585, 785);
+    g.fillStyle = "#7B4DE0"; g.font = "700 40px Poppins, sans-serif"; g.fillText(est.cod.split("").join(" "), 690, 812);
+    // Cuadrícula de 20
+    g.fillStyle = "#2B2D31"; g.font = "600 28px Poppins, sans-serif"; g.fillText("Pregunta por pregunta", 100, 920);
+    for (var k = 0; k < TOTAL; k++) { var cx = 100 + (k % 10) * 88, cy = 950 + Math.floor(k / 10) * 92, ok = est.ok[k];
+      g.fillStyle = ok ? "#E7F4EA" : "#FBEAEA"; rr(cx, cy, 76, 76, 14); g.fill(); g.strokeStyle = ok ? "#1E8A3A" : "#D64545"; g.lineWidth = 3; rr(cx, cy, 76, 76, 14); g.stroke();
+      g.fillStyle = "#6B6F76"; g.font = "600 18px Inter, sans-serif"; g.fillText(String(k + 1), cx + 8, cy + 24);
+      g.fillStyle = ok ? "#1E8A3A" : "#D64545"; g.font = "700 38px Poppins, sans-serif"; g.fillText(ok ? "✔" : "✘", cx + 26, cy + 60); }
+    var url = cv.toDataURL("image/png");
+    $("img-res").src = url; $("link-desc").href = url; $("imagen-res").hidden = false;
+    $("imagen-res").scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(go); else go();
+};
+
+// ---------- Vista previa del maestro ----------
+$("btn-demo").onclick = function () {
+  var qs = generarExamen(), resp = [], ok = [];
+  qs.forEach(function () { var bien = Math.random() < 0.75;
+    var r = bien ? "c" : (Math.random() < 0.7 ? "f" : "o0"); resp.push(r); ok.push(bien); });
+  est = { nombre: "Alumno de Ejemplo", grupo: "3A", preguntas: qs, resp: resp, ok: ok, idx: TOTAL - 1, fin: true, fecha: fechaHoy(), demo: true };
+  pintarResultados(); enviar();
+};
+$("btn-reset").onclick = function () { est = null; mostrar("inicio"); };
+$("btn-sig-alumno").onclick = function () { try { localStorage.removeItem(CLAVE); } catch (e) {} est = null; $("nombre").value = ""; $("grupo").value = ""; mostrar("inicio"); };
+
+// ---------- Verificar código ----------
+$("btn-ver-verif").onclick = function () { mostrar("verificar"); };
+$("btn-verif-volver").onclick = function () { mostrar(est && est.fin && !est.demo ? "resultados" : "inicio"); };
+$("btn-verif").onclick = function () {
+  var c = codigo($("v-nombre").value, $("v-grupo").value, parseInt($("v-aciertos").value, 10), $("v-fecha").value);
+  var ok = c === $("v-codigo").value.trim().toUpperCase().replace(/\s+/g, "");
+  var r = $("v-res"); r.hidden = false;
+  r.innerHTML = ok ? '<b style="color:var(--correcto)">✔ El código coincide.</b> Los datos no fueron modificados.' : '<b style="color:var(--incorrecto)">✘ El código no coincide.</b> Revisa que copiaste igual nombre, grupo, aciertos y fecha.';
+};
+
+// ---------- Arranque ----------
+(function () {
+  if (location.hash === "#verificar") { mostrar("verificar"); return; }
+  var s = cargar();
+  if (s && s.preguntas && s.preguntas.length === TOTAL && s.preguntas.every(function (p) { return pregunta(p.id); })) { est = s;
+    if (est.fin) { pintarResultados(); enviar(); } else { mostrar("examen"); pintarPregunta(); } }
+})();
+</script>
+</body>
+</html>
